@@ -77,8 +77,12 @@ def predict_domains(domains: list[str], model_path: str = "dga_detector_pipeline
 
     for domain, label, prob in zip(domains, labels, probs):
         pred_str = "DGA" if label == 1 else "benign"
-        verdict  = "⚠  LIKELY MALICIOUS" if label == 1 else "✓  safe"
-        print(f"{domain:<40} {pred_str:<8} {prob:.4f}     {verdict}")
+        try:
+            verdict  = "⚠  LIKELY MALICIOUS" if label == 1 else "✓  safe"
+            print(f"{domain:<40} {pred_str:<8} {prob:.4f}     {verdict}")
+        except UnicodeEncodeError:
+            verdict  = "[!] LIKELY MALICIOUS" if label == 1 else "[+] safe"
+            print(f"{domain:<40} {pred_str:<8} {prob:.4f}     {verdict}")
 
     # Summary
     n_dga    = int(labels.sum())
@@ -92,12 +96,20 @@ def predict_domains(domains: list[str], model_path: str = "dga_detector_pipeline
 
 def main() -> None:
     args = sys.argv[1:]
-    model_path = "dga_detector_pipeline.pkl"
+    model_path = None
     if "--model" in args:
         idx = args.index("--model")
         if idx + 1 < len(args):
             model_path = args[idx + 1]
             args = args[:idx] + args[idx + 2:]
+
+    if model_path is None:
+        if os.path.exists("dga_detector_pipeline.pkl"):
+            model_path = "dga_detector_pipeline.pkl"
+        elif os.path.exists("dga_detector_live.pkl"):
+            model_path = "dga_detector_live.pkl"
+        else:
+            model_path = "dga_detector_pipeline.pkl"
 
     if args:
         raw = " ".join(args)

@@ -11,11 +11,19 @@ This module extracts numerical features from a raw domain string so that a
 machine-learning classifier can distinguish DGA from benign domains.
 """
 
+import sys
 import math
 import re
 import os
 import string
 from collections import Counter
+
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
 
 import numpy as np
 

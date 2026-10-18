@@ -11,6 +11,13 @@ import urllib.request
 import os
 import sys
 
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
 URL = "https://raw.githubusercontent.com/dwyl/english-words/master/words_alpha.txt"
 OUTPUT = "words_alpha.txt"
 
